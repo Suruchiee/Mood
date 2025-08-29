@@ -4,183 +4,111 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
 }
-$username = $_SESSION['username'] ?? 'User';
-
-// Determine greeting based on time
-$hour = date('H');
-if ($hour < 12) {
-    $greeting = "Good Morning";
-} elseif ($hour < 18) {
-    $greeting = "Good Afternoon";
-} else {
-    $greeting = "Good Evening";
-}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard - MoodTune</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodTune Dashboard</title>
     <style>
         body {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to right, #ff4081, #7e57c2);
-            color: #fff;
+            font-family: Arial, sans-serif;
+            background-color: #1c1c1c;
+            color: white;
         }
 
         .navbar {
-            background-color: rgba(0, 0, 0, 0.2);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            background: linear-gradient(90deg, #ff4081, #4fc3f7, #7e57c2);
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .navbar a {
-            color: #fff;
+            color: white;
             text-decoration: none;
-            margin: 0 10px;
-            padding: 10px 16px;
+            font-weight: 600;
+            padding: 8px 14px;
+            transition: all 0.3s ease-in-out;
             border-radius: 8px;
-            font-weight: bold;
-            transition: all 0.3s ease;
         }
 
         .navbar a:hover {
-            background-color: #4fc3f7;
-            box-shadow: 0 0 10px #4fc3f7;
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-left a {
+            margin-right: 15px;
         }
 
         .logout-btn {
-            background-color: #e53935;
+            background-color: rgba(255, 64, 129, 0.6);
+            padding: 8px 14px;
         }
 
         .logout-btn:hover {
-            background-color: #c62828;
-            box-shadow: 0 0 10px #e57373;
+            background-color: rgba(255, 64, 129, 0.85);
         }
 
-        .container {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 30px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        /* Mood Detection Box */
+        .mood-box {
             text-align: center;
+            padding: 30px;
+            margin: 20px auto;
+            width: 60%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
         }
 
-        .welcome {
-            font-size: 28px;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-
-        .features {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-            margin-top: 40px;
-        }
-
-        .card {
-            width: 280px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(6px);
-            padding: 25px;
-            border-radius: 18px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            text-align: left;
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.4);
-        }
-
-        .card h3 {
-            color: #ffca28;
-            margin-bottom: 10px;
-        }
-
-        .card p {
-            font-size: 15px;
-            margin-bottom: 15px;
-            color: #eee;
-        }
-
-        .card a {
-            display: inline-block;
-            text-decoration: none;
-            padding: 10px 16px;
-            background-color: #4fc3f7;
-            color: #000;
-            border-radius: 8px;
+        .mood-btn {
+            background: linear-gradient(45deg, #ff4081, #4fc3f7);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
             font-weight: bold;
-            transition: all 0.3s;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
         }
 
-        .card a:hover {
-            background-color: #039be5;
-            box-shadow: 0 0 10px #81d4fa;
-        }
-
-        @media screen and (max-width: 768px) {
-            .features {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .card {
-                width: 90%;
-            }
+        .mood-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #ff4081;
         }
     </style>
 </head>
 <body>
 
-<div class="navbar">
-    <div>
-        <a href="dashboard.php">Dashboard</a>
-        <a href="mood-detect.php">Mood Detector</a>
-        <a href="profile.php">Profile</a>
-        <a href="about.php">About</a>
-        <a href="contact.php">Contact</a>
-    </div>
-    <div>
-        <a href="logout.php" class="logout-btn">Logout</a>
-    </div>
-</div>
-
-<div class="container">
-    <p class="welcome"><?= $greeting ?>, <strong><?= htmlspecialchars($username) ?></strong> 👋</p>
-    <p>Welcome back to MoodTune. Let’s match your mood with the perfect tunes!</p>
-
-    <div class="features">
-        <div class="card">
-            <h3>Mood Detection</h3>
-            <p>Start detecting your current mood and receive personalized suggestions.</p>
-            <a href="mood-detect.php">Detect Mood</a>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="nav-left">
+            <a href="dashboard.php">Dashboard</a>
+            <a href="about.php">About</a>
+            <a href="contact.php">Contact</a>
         </div>
-
-        <div class="card">
-            <h3>Profile</h3>
-            <p>Update your email, profile picture, or password anytime here.</p>
-            <a href="profile.php">Edit Profile</a>
-        </div>
-
-        <div class="card">
-            <h3>Saved Songs</h3>
-            <p>Check the songs you've saved while browsing your moods.</p>
-            <a href="saved.php">Coming Soon</a>
+        <div class="nav-right">
+            <a href="logout.php" class="logout-btn">Logout</a>
         </div>
     </div>
-</div>
+
+    <!-- Mood Detection Interface -->
+    <div class="mood-box">
+        <h2>Welcome, <?php echo $_SESSION['username']; ?> 🎵</h2>
+        <p>Click below to detect your mood and get a song suggestion!</p>
+        <form action="mood_detect.php" method="post">
+            <button type="submit" class="mood-btn">Start Mood Detection</button>
+        </form>
+    </div>
 
 </body>
 </html>
